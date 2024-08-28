@@ -1,24 +1,22 @@
-import { createClient } from 'redis';
+const redis = require("redis");
+const client = redis.createClient();
 
-const client = createClient();
-
-client.on('error', (error) => {
+client.on("error", (error) => {
   console.log(`Redis client connected to the server: ${error}`);
 });
 
-client.on('ready', () => {
-  console.log('Redis client connected to the server');
+client.on("ready", () => {
+  console.log("Redis client connected to the server");
 });
 
-client.on('message', (channel, message) => {
-  if (channel.localeCompare('holberton school channel') === 0) {
-    console.log(message);
+const publishMessage = (message, time) => {
+  setTimeout(() => {
+    console.log(`About to send ${message}`);
+    client.publish("holberton school channel", message);
+  },time);
+};
 
-    if (message.localeCompare('KILL_SERVER') === 0) {
-      client.unsubscribe(channel);
-      client.quit();
-    }
-  }
-});
-
-client.subscribe('holberton school channel');
+publishMessage("Holberton Student #1 starts course", 100);
+publishMessage("Holberton Student #2 starts course", 200);
+publishMessage("KILL_SERVER", 300);
+publishMessage("Holberton Student #3 starts course", 400);
